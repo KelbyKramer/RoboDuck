@@ -48,6 +48,7 @@ void loop() {
   Serial.print(d);
   Serial.println();
 
+//part below is not working
   if ((Serial2.available() > 0) && (gps.encode(Serial2.read()))) {
     Serial.print(F("Location: "));
 
