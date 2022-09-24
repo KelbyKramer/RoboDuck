@@ -21,8 +21,8 @@ void setup(){
   delay(3000);
 
 ////
-Below is where the pins are attached to the specic servo motor this allows us
-to control via a PWM
+//Below is where the pins are attached to the specic servo motor this allows us
+//to control via a PWM
 
 
   //Atach servos to pins
@@ -49,29 +49,24 @@ void loop() {
   Serial.println();
 
 //part below is not working
-  if ((Serial2.available() > 0) && (gps.encode(Serial2.read()))) {
+  if ((Serial2.available() > 0) ) {
     Serial.print(F("Location: "));
+    if((gps.encode(Serial2.read()))){
+      if (gps.location.isValid()) {
+        
+        Serial.print("Lat: ");
+        Serial.print(gps.location.lat(), 6);
+        Serial.print(F(","));
+        Serial.print("Lng: ");
+        Serial.print(gps.location.lng(), 6);
+        Serial.println();
 
-    if (gps.location.isValid()) {
+      } else {
 
-      Serial.print("Lat: ");
+        Serial.print(F("INVALID"));
 
-      Serial.print(gps.location.lat(), 6);
-
-      Serial.print(F(","));
-
-      Serial.print("Lng: ");
-
-      Serial.print(gps.location.lng(), 6);
-
-      Serial.println();
-
-    } else {
-
-      Serial.print(F("INVALID"));
-
+      }
     }
-
 
   }
 
