@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef MyDuckClass_h
 #define MyDuckClass_h
 #include "Arduino.h"
@@ -32,3 +33,6 @@ class MyDuckClass {
 };
 
 #endif
+=======
+
+>>>>>>> 7757d0cece6680b1795c72261733b8fc98e65a9e

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "Arduino.h"
 #include "MyDuckClass.h"
 MyDuckClass::MyDuckClass(int pinPropellor, int pinHeadingMotor, int pinHeadBobbing) {
@@ -33,3 +34,6 @@ String MyDuckClass::currentLocation(){
 int MyDuckClass::angleToWaypoint(String waypointLatLon){
 // Returns angle needed to get to waypoint
 }
+=======
+
+>>>>>>> 7757d0cece6680b1795c72261733b8fc98e65a9e
