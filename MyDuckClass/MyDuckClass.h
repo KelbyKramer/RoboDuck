@@ -1,15 +1,14 @@
-<<<<<<< HEAD
 #ifndef MyDuckClass_h
 #define MyDuckClass_h
 #include "Arduino.h"
 
 class MyDuckClass {
     public:
-        MyDuckClass(int pinPropellor, int pinHeadingMotor, int pinHeadBobbing);
+        MyDuckClass(int pinPropellor,int pinPropDirection int pinHeadingMotor, int pinHeadBobbing);
             //Used to calibrate heading (IMPORTANT)
             void calibrationOfMagnotometer();
             // Turning on DC motor to have Propellor run
-            void turnOnProppellor(int propellorSpeed);
+            void turnOnProppellor(int propellorSpeed, int propellorDirection);
             //Set direction of Propellor
             void movePropHeading(int angleOfHeading);
             // Spot lock for duck
@@ -21,7 +20,7 @@ class MyDuckClass {
       
     private:
         //Pins for Different motors being used
-        int _pinProp, _pinHM, _pinHB;
+        int _pinProp,_pinPropDir, _pinHM, _pinHB;
         //Angle needed for heading
         int _angleOfHeading;
         // Array of Waypoints
@@ -33,6 +32,3 @@ class MyDuckClass {
 };
 
 #endif
-=======
-
->>>>>>> 7757d0cece6680b1795c72261733b8fc98e65a9e

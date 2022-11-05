@@ -1,22 +1,38 @@
-<<<<<<< HEAD
 #include "Arduino.h"
 #include "MyDuckClass.h"
-MyDuckClass::MyDuckClass(int pinPropellor, int pinHeadingMotor, int pinHeadBobbing) {
-    _pinProp = pinPropellor;
+#include <ESP32Servo.h>
+#include <analogWrite.h>
+#include <ESP32Tone.h>
+#include <ESP32PWM.h>
+#include <TinyGPSPlus.h>
+TinyGPSPlus gps;
+#include <QMC5883LCompass.h>
+QMC5883LCompass compass;
+MyDuckClass::MyDuckClass(int pinPropellorSpeed, int pinPropellorDirection, int pinHeadingMotor, int pinHeadBobbing) {
+    _pinPropSpeed = pinPropellorSpeed;
+    _pinPropDirection = pinPropellorDirection;
     _pinHM = pinHeadingMotor;
     _pinHB = pinHeadBobbing;
     //Remaining Private Variables 
     //_angleOfHeading
     //wayPoints[10]
     //_spotLockLocation
-}
+    Servo headBobbingServo;
+    Servo PropellorServo;
+    headBobbingServo.Attach(_pinHM);
+    PropellorServo.Attach(_pin);
+
+
+}   
 
 void MyDuckClass::calibrationOfMagnotometer(){
 //Used to calibrate heading (IMPORTANT)
 }
 
-void MyDuckClass::turnOnProppellor(int propellorSpeed){
+void MyDuckClass::turnOnProppellor(int propellorSpeed, int propellorDirection){
 // Turning on DC motor to have Propellor run
+
+
 }
 
 void MyDuckClass::movePropHeading(int angleOfHeading){
@@ -34,6 +50,3 @@ String MyDuckClass::currentLocation(){
 int MyDuckClass::angleToWaypoint(String waypointLatLon){
 // Returns angle needed to get to waypoint
 }
-=======
-
->>>>>>> 7757d0cece6680b1795c72261733b8fc98e65a9e
