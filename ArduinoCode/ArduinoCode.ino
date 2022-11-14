@@ -4,8 +4,8 @@
 MyDuckClass roboDuck(27,14,25,26);
 
 // Replace with your network credentials
-const char* ssid = "Pixel_9170";
-const char* password = "HelloWorld123";
+const char* ssid = "ESP32-Access-Point";
+const char* password = "123456789";
 
 // Set web server port number to 80
 WiFiServer server(80);
@@ -20,10 +20,24 @@ unsigned long previousTime = 0;
 // Define timeout time in milliseconds (example: 2000ms = 2s)
 const long timeoutTime = 2000;
 
+bool calibrate = false;
+bool waypoints = false;
+bool spotlock = false;
+bool returnhome = false;
+
 void setup() {
     Serial.begin(115200);
+
+    // Setting ESP32 as access point 
+    Serial.print("Setting AP (Access Point)…");
+    // Remove the password parameter, if you want the AP (Access Point) to be open
+    WiFi.softAP(ssid, password);
+  
+    IPAddress IP = WiFi.softAPIP();
+    Serial.print("AP IP address: ");
+    Serial.println(IP);
     // Connect to Wi-Fi network with SSID and password
-    Serial.print("Connecting to ");
+    /*Serial.print("Connecting to ");
     Serial.println(ssid);
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
@@ -34,7 +48,7 @@ void setup() {
     Serial.println("");
     Serial.println("WiFi connected.");
     Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
+    Serial.println(WiFi.localIP());*/
     server.begin();
  
 }
@@ -65,6 +79,35 @@ void loop() {
             client.println("Content-type:text/html");
             client.println("Connection: close");
             client.println();
+
+            // handle get requests for four buttons
+            // current button bool is set to true, all others are reset to false
+            if(header.indexOf("GET /calibrate") >= 0){
+              Serial.println("calibrate");
+              calibrate = true;
+              Serial.println(calibrate);
+              waypoints = false;
+              spotlock = false;
+              returnhome = false;
+            } else if (header.indexOf("GET /waypoints") >= 0){
+                Serial.println("waypoints");
+                waypoints = true;
+                Serial.println(waypoints);
+                calibrate = false;
+                spotlock = false;
+                returnhome = false;
+            } else if (header.indexOf("GET /spotlock") >= 0){
+                Serial.println("spotlock");
+                spotlock = true;
+                Serial.println(spotlock);
+            } else if (header.indexOf("GET /returnhome") >= 0){
+                Serial.println("returnhome");
+                returnhome = true;
+                Serial.println(returnhome);
+                calibrate = false;
+                waypoints = false;
+                spotlock = false;
+            }
             
             // Display the HTML web page
             client.println("<!DOCTYPE html><html>");
@@ -79,20 +122,42 @@ void loop() {
             
             // Web Page Heading
             client.println("<body><h1>Robo Duck</h1>");
-            client.println("<center><div id='grid' style='width:80%; border:5px solid black;'><canvas id='canvas' style='height:100%; width:100%; background-color:white;' /></div></center>");
-            client.println("<div style='display:grid; grid-template-rows: 2fr 2fr; grid-template-columns: 2fr 2fr;'><button class='button'>Calibrate</button><button class='button'>Waypoints</button><button class='button'>Spot Lock</button><button class='button'>Return Home</button></div>"); 
+            client.println("<center><div id='grid' style='width:80%; border:5px solid black;'><button style='background-color:red;' onclick='resetWaypoints()'>Reset Waypoints</button><button>Waypoints Left: <div id='numWaypoints'>10</div></button><canvas id='canvas' style='height:100%; width:100%; background-color:white;' /></div></center>");
+            client.println("<div style='display:grid; grid-template-rows: 2fr 2fr; grid-template-columns: 2fr 2fr;'><a href='/calibrate'><button class='button'>Calibrate</button></a><a href='/waypoints'><button class='button'>Waypoints</button></a><a href='/spotlock'><button class='button'>Spot Lock</button></a><a href='/returnhome'><button class='button'>Return Home</button></a></div>"); 
 
             client.println("</body></html>");
-            client.println("<div style='width:240px; height:320px;'> \ 
-                            <center>ARDUINO</center> \
-                             \
-                            </div>");
             client.println("<script type='text/javascript'> \ 
                 const gridInit = document.getElementById('grid');\
                 const height = gridInit.clientHeight;\
                 const width = gridInit.clientWidth;\
+                var waypoints = [];\
                 function hello(){ \
                   console.log('Hello');\
+                }\
+                function resetWaypoints(){\
+                  var response = confirm('Are you sure you want to reset all waypoints?');\
+                  console.log(response);\
+                  if(response){\
+                    waypoints = [];\
+                    var canvas = document.getElementById('canvas');\
+                    var ctx = canvas.getContext('2d');\
+                    ctx.beginPath();\
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);\
+                  }\
+                }\
+                function decrementWaypoints(){\
+                  console.log('DecrementWaypoints');\
+                  var divElement = document.getElementById('numWaypoints');\
+                  var numWaypoints = divElement.innerHTML;\
+                  if(numWaypoints == 0){\
+                    alert('no more waypoints');\
+                    return false;\
+                  }\
+                  else{\
+                    numWaypoints--;\
+                    divElement.innerHTML = numWaypoints;\
+                    return true;\
+                  }\
                 }\
                 function printMousePos(event) {\
                   var absX = event.clientX;\
@@ -111,12 +176,16 @@ void loop() {
                   var canvas = document.getElementById('canvas');\
                   var ctx = canvas.getContext('2d');\
                   ctx.beginPath();\
-                  ctx.arc(x, y, 10, 0, 2 * Math.PI);\
-                  ctx.stroke(); \
+                  waypoints.push([x,y]);\
+                  console.log(waypoints);\
+                  var drawWaypoint = decrementWaypoints();\
+                  if (drawWaypoint){\
+                    ctx.arc(x, y, 10, 0, 2 * Math.PI);\
+                    ctx.stroke(); \
+                  }\
                 }\
-                var grid = document.getElementById('grid');\
+                var grid = document.getElementById('canvas');\
                 grid.addEventListener('click', printMousePos);\
-                hello(); \
                 </script> \
                 ");
             // The HTTP response ends with another blank line
