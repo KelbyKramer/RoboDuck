@@ -2,21 +2,29 @@
 #define MyDuckClass_h
 #include "Arduino.h"
 
+
 class MyDuckClass {
     public:
         MyDuckClass(int pinPropellor,int pinPropDirection, int pinHeadingMotor, int pinHeadBobbing);
             //Used to calibrate heading (IMPORTANT)
-            void calibrationOfMagnotometer();
+            String calibrationOfMagnotometer();
             // Turning on DC motor to have Propellor run
             void turnOnProppellor(int propellorSpeed, int propellorDirection);
+
+            void turnOffProppellor(int propellorSpeed, int propellorDirection);
             //Set direction of Propellor
             void movePropHeading(int angleOfHeading);
             // Spot lock for duck
-            void spotLock(String spotLockLocation);
+            void spotLock(float spotLockLocation[2]);
             //Get the current location of the duck
-            String currentLocation();
+            float * currentLocation();
             // Returns angle needed to get to waypoint
-            int angleToWaypoint(String waypointLatLon);
+            float angleToWaypoint (float waypointLatLonCur[2], float waypointLatLon[2]);
+            //Get distance to specified waypoint
+            float distanceToWaypoint(float waypointLatLonCur[2], float desiredpointLatLon[2]);
+            //get heading from magnotometer
+            float GetDuckHeading() ;
+
       
     private:
         //Pins for Different motors being used
